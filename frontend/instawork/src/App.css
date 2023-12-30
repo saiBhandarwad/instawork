@@ -1,0 +1,93 @@
+.app_container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.main_heading_container{
+    background: linear-gradient(45deg,rgba(16, 104, 255, 0.651), rgba(255, 0, 200, 0.599)90%);
+}
+.main_heading{
+    padding: 20px;
+    text-align: center;
+    font-size: 30px;
+    font-weight: 900;
+    background: linear-gradient(45deg, rgb(255, 0, 0),rgb(0, 47, 255));
+    color: transparent;
+    background-clip: text;
+    /* background-position: center; */
+}
+.status {
+    height: 30px;
+    text-align: center;
+    margin-top: 20px !important;
+    font-size: 18px;
+}
+.job_holder {
+    margin: 10px 0 0 20px;
+}
+
+.filter_handler_container {
+    display: none;
+    place-items: center;
+
+}
+
+.filter_handler {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    border: 2px solid rgb(44, 43, 43);
+    padding: 2px 10px;
+    cursor: pointer;
+}
+
+.filter_handler_container .show_filter_holder{
+    height: 100vh;
+    width: 100vw;
+    background: rgb(231, 231, 231);
+    position: fixed;
+    top: 0px;
+    z-index: 9;
+    display: grid;
+    place-items: center;
+}
+.show_filter_holder .fa-x{
+    color: black;
+    cursor: pointer;
+    font-size: 25px;
+}
+@media screen and (max-width:1000px) {
+    .app_container {
+        flex-direction: column-reverse;
+        align-items: center;
+        margin-top: 30px;
+    }
+    .filter_handler_container {
+        margin-top: 50px;
+        display: grid;
+    }
+    .app_container .filter_holder{
+        display: none;
+    }
+    
+}
+@media screen and (max-width:700px) {
+    .job_holder{
+        margin: 0;
+    }
+    .main_heading{
+        font-size: 25px;
+    }
+}
+@media screen and (max-width:500px) {
+    .main_heading{
+        font-size: 20px;
+        font-weight: 500;
+    }
+}
+@media screen and (max-width:400px) {
+    .main_heading{
+        font-size: 16px;
+        font-weight: 500;
+    }
+}
