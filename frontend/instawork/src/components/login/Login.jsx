@@ -120,6 +120,7 @@ export default function Login() {
             handleNotify()
             dispatch(setNotify({ status: res.data.success, message: res.data.message }))
             if (res.data.token) {
+                dispatch(setIsLoggedIn(true))
                 localStorage.setItem("auth-token", res.data.token)
                 navigate("/works", { state: { message: "login successful!" } })
             }
