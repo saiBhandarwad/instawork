@@ -37,9 +37,11 @@ export default function Navbar() {
   }
   const handleLogin = () => {
     navigate("/login")
+    handleClose()
   }
   const handleSignup = () => {
     navigate("/signup")
+    handleClose()
   }
   const handleHome = () =>{
     navigate("/")
@@ -108,7 +110,7 @@ export default function Navbar() {
           <div className=''>
             <hr className='line' />
           </div>
-          <span className='' onClick={() => navigate("/")}>Home</span>
+          <span className='' onClick={() =>{ navigate("/"); handleClose()}}>Home</span>
           <span className='' onClick={handleLogin}>Login</span>
           <span className='' onClick={handleSignup}>Signup</span>
         </div>}
@@ -118,11 +120,11 @@ export default function Navbar() {
             <hr className='line' />
           </div>
           <div className='container_for_cursor'>
-            <div className='profile_home' onClick={() => navigate("/")}>Home</div>
-            <div className='profile_home' onClick={() => navigate("/works")}>Find Jobs</div>
-            <div onClick={() => navigate("/myjobs")}>My Jobs</div>
-            <div onClick={() => navigate("/")}>Chats</div>
-            <div className='profile_post_job' onClick={() => navigate("/post")}>Post Job</div>
+            <div className='profile_home' onClick={() =>{ navigate("/"); handleClose()}}>Home</div>
+            <div className='profile_home' onClick={() =>{ navigate("/works"); handleClose()}}>Find Jobs</div>
+            <div onClick={() => {navigate("/myjobs"); handleClose()}}>My Jobs</div>
+            <div onClick={() =>{ navigate("/"); handleClose()}}>Chats</div>
+            <div className='profile_post_job' onClick={() =>{ navigate("/post"); handleClose()}}>Post Job</div>
             <div className='profile_logout' onClick={handleLogout}>Logout</div>
           </div>
         </div>}
