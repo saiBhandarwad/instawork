@@ -21,7 +21,7 @@
             "dest": "/post"
         },
         {
-            "src": "/**",
+            "src": "/*",
             "dest": "/notfound"
         }
     ]
