@@ -40,7 +40,7 @@ export default function Job({ jobArray, action }) {
         });
     }
     const removeFromSaved = async (work) => {
-        const response = await axios.post("http://localhost:8080/work/removeFromSavedJob", {
+        const response = await axios.post("https://instawork-backend.vercel.app/work/removeFromSavedJob", {
             data: { work, token },
             headers: { token }
         });

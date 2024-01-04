@@ -29,7 +29,7 @@ export const getSavedJobs = createAsyncThunk(
     'user/getSavedJobs',
     async (token) => {
         const { email } = decodeToken(token)
-        const response = await axios.post("http://localhost:8080/work/getSavedJobs", {
+        const response = await axios.post("https://instawork-backend.vercel.app/work/getSavedJobs", {
             data: { email },
             headers: { token }
         });
@@ -43,11 +43,11 @@ export const getMyJobs = createAsyncThunk(
     'user/getMyJobs',
     async (token) => {
         const { email } = decodeToken(token)
-        const resMyJobs = await axios.post("http://localhost:8080/work/getMyJobs", {
+        const resMyJobs = await axios.post("https://instawork-backend.vercel.app/work/getMyJobs", {
             data: { email },
             headers: { token }
         });
-        const resSavedWorks = await axios.post("http://localhost:8080/work/getSavedJobs", {
+        const resSavedWorks = await axios.post("https://instawork-backend.vercel.app/work/getSavedJobs", {
             data: { email },
             headers: { token }
         });
@@ -73,7 +73,7 @@ export const fetchAllWorks = createAsyncThunk(
         const resWorks = await axios.post("https://instawork-backend.vercel.app/work/works", {
             headers: { token }
         });
-        const resSavedWorks = await axios.post("http://localhost:8080/work/getSavedJobs", {
+        const resSavedWorks = await axios.post("https://instawork-backend.vercel.app/work/getSavedJobs", {
             data: { email },
             headers: { token }
         });
