@@ -6,23 +6,19 @@
         },
         {
             "src": "/works",
-            "dest": "/works"
+            "dest": "/"
         },
         {
             "src": "/login",
-            "dest": "/login"
+            "dest": "/"
         },
         {
             "src": "/signup",
-            "dest": "/signup"
+            "dest": "/"
         },
         {
             "src": "/post",
-            "dest": "/post"
-        },
-        {
-            "src": "/*",
-            "dest": "/notfound"
+            "dest": "/"
         }
     ]
 }
