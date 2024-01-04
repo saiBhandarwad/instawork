@@ -120,8 +120,8 @@ export default function Navbar() {
           <div className='container_for_cursor'>
             <div className='profile_home' onClick={() => navigate("/")}>Home</div>
             <div className='profile_home' onClick={() => navigate("/works")}>Find Jobs</div>
-            <div>My Jobs</div>
-            <div>Chats</div>
+            <div onClick={() => navigate("/myjobs")}>My Jobs</div>
+            <div onClick={() => navigate("/")}>Chats</div>
             <div className='profile_post_job' onClick={() => navigate("/post")}>Post Job</div>
             <div className='profile_logout' onClick={handleLogout}>Logout</div>
           </div>
