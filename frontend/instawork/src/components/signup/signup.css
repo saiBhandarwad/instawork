@@ -189,10 +189,22 @@ input::-webkit-inner-spin-button {
     color: red;
 }
 @media screen and (max-width:800px) {
-    .signup_container img{
+    .signup_container .signup_img_container img{
         display: none;
     }
     .signup_left_container{
         height: 600px;
+    }
+}
+@media screen and (max-width:450px) {
+    .signup_container{
+        width: 90%;
+        margin: auto;
+    }
+}
+@media screen and (max-width:400px) {
+    .signup_container{
+        width: 95%;
+        margin: auto;
     }
 }
