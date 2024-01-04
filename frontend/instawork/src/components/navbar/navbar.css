@@ -123,10 +123,12 @@ nav{
     background: #1a385d;
     padding: 6px 25px;
     border-radius: 50px;
-    min-width: 60px;
     white-space: nowrap;
     text-align: center;
     color: white;
+}
+.activeLink{
+    background: #5d241a;
 }
 .profile_big_container{
     height: 70px;

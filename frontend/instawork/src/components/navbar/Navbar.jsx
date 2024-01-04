@@ -1,34 +1,31 @@
 import React, { useEffect, useState } from 'react'
-import { decodeToken } from 'react-jwt'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import './navbar.css'
-import axios from 'axios'
-export default function Navbar({ home }) {
+import { fetchUserAsync, setIsLoggedIn } from '../../redux/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+export default function Navbar() {
   const navigate = useNavigate()
-  const [user, setUser] = useState({ email: "", firstName: "", lastName: "" })
+  const user = useSelector(state => state.user.user)
   const [showMenu, setShowMenu] = useState(false)
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const isLoggedIn = useSelector(state => state.user.isLoggedIn)
+  const { pathname } = useLocation()
   const token = localStorage.getItem("auth-token")
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    if (token) {
-      const decodedToken = decodeToken(token)
-      setIsAuthenticated(true)
-      axios.post("https://instawork-backend.vercel.app/user/getUser", {
-        data: {
-          email: decodedToken?.email
-        }
-      }).then(res => {
-        setUser({ email: res.data.user.email, firstName: res.data.user.firstName, lastName: res.data.user.lastName })
-      })
+    dispatch(fetchUserAsync(token))
+  }, [isLoggedIn])
+
+  useEffect(() => {
+    if (user) {
+      dispatch(setIsLoggedIn(true))
     }
-  }, [])
+  }, [user])
+
   const handleLogout = () => {
     localStorage.removeItem("auth-token")
+    dispatch(setIsLoggedIn(false))
     navigate("/login", { state: { message: "logout successfully!" } })
-  }
-  const handlePost = () => {
-    navigate("/post")
   }
   const handleBar = () => {
     setShowMenu(true)
@@ -44,6 +41,25 @@ export default function Navbar({ home }) {
   const handleSignup = () => {
     navigate("/signup")
   }
+  const handleHome = () =>{
+    navigate("/")
+  }
+  const handleLink = (fn,elem) =>{
+    fn()
+    if(elem === "login"){
+      document.getElementById("signup").classList.remove("activeLink")
+      document.getElementById("home").classList.remove("activeLink")
+    }
+    if(elem === "signup"){
+      document.getElementById("login").classList.remove("activeLink")
+      document.getElementById("home").classList.remove("activeLink")
+    }
+    if(elem === "home"){
+      document.getElementById("signup").classList.remove("activeLink")
+      document.getElementById("login").classList.remove("activeLink")
+    }
+    document.getElementById(elem).classList.add("activeLink")
+  }
   return (
     <>
       <nav>
@@ -51,15 +67,18 @@ export default function Navbar({ home }) {
           <div className="left"><span className='insta'>insta</span><span className='work'>work</span>.</div>
 
           <div className="right">
-            {!isAuthenticated ? <><button className='nav_link_btn' onClick={() => navigate('/login')}>Login</button>
-              <button className='nav_link_btn' onClick={() => navigate('/signup')}>Register</button></> :
-              home ? <span className='nav_link_btn' onClick={() => navigate("/")}>Home</span> : <span className='nav_link_btn' onClick={handlePost}>Post Job</span>
-            }
-            {isAuthenticated && <div className='profile_big_container'>
-              <span className='profile_btn'>{user.firstName.charAt(0).toUpperCase()}</span>
+            {!isLoggedIn && <>
+              <span className='nav_link_btn activeLink' onClick={() => handleLink(handleHome,"home")} id="home">Home</span>
+              <span className='nav_link_btn' onClick={() => handleLink(handleLogin,"login")} id="login">Login</span>
+              <span className='nav_link_btn' onClick={() => handleLink(handleSignup,"signup")} id="signup">Register</span>
+            </>}
+            
+            {isLoggedIn && <span className='nav_link_btn' onClick={() => navigate("/post")}>post job</span>}
+            {isLoggedIn && <div className='profile_big_container'>
+              <span className='profile_btn'>{user?.firstName.charAt(0).toUpperCase()}</span>
               <div className='profile_container'>
-                <div className='user_name'>{user.firstName.toUpperCase()} {user.lastName.toUpperCase()}</div>
-                <div className='user_email'>{user.email}</div>
+                <div className='user_name'>{user?.firstName.toUpperCase()} {user?.lastName.toUpperCase()}</div>
+                <div className='user_email'>{user?.email}</div>
                 <hr className='line' />
                 <div className="lower">
                   <div onClick={() => navigate("/")}>home</div>
@@ -84,7 +103,7 @@ export default function Navbar({ home }) {
         <div className="mobileMenu">
           {showMenu && <i className="fa-solid fa-x" onClick={handleClose}></i>}
         </div>
-        {!isAuthenticated && <div className="menu_inner_container">
+        {!isLoggedIn && <div className="menu_inner_container">
           <div className=''>WELCOME TO INSTAWORK</div>
           <div className=''>
             <hr className='line' />
@@ -93,9 +112,9 @@ export default function Navbar({ home }) {
           <span className='' onClick={handleLogin}>Login</span>
           <span className='' onClick={handleSignup}>Signup</span>
         </div>}
-        {isAuthenticated && <div className="menu_inner_container">
-          <div className=''>{user.firstName.toUpperCase()} {user.lastName.toUpperCase()}</div>
-          <div className=''>{user.email}
+        {isLoggedIn && <div className="menu_inner_container">
+          <div className=''>{user?.firstName.toUpperCase()} {user?.lastName.toUpperCase()}</div>
+          <div className=''>{user?.email}
             <hr className='line' />
           </div>
           <div className='container_for_cursor'>

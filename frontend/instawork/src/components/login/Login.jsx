@@ -9,7 +9,7 @@ import axios from 'axios'
 import Notify from '../notify/Notify'
 import Navbar from '../navbar/Navbar'
 import { useDispatch, useSelector } from 'react-redux'
-import { setNotify, setShowNotify } from '../../redux/authSlice'
+import { setIsLoggedIn, setNotify, setShowNotify } from '../../redux/authSlice'
 import { createBrowserHistory } from 'history'
 import { isExpired } from 'react-jwt'
 
@@ -34,13 +34,11 @@ export default function Login() {
         if (token) {
             isMyTokenExpired = isExpired(token)
         }
-        console.log({ isMyTokenExpired });
         if(isMyTokenExpired){
             localStorage.removeItem("auth-token")
             handleNotify()
             dispatch(setNotify({ status: false, message: "token expired"}))
         }
-        console.log(history);
         loginUser()
     }, [])
     const handleNotify = () => {
@@ -80,7 +78,7 @@ export default function Login() {
             } else if (res.data.success === false) {
                 setOTPSent('')
             }
-            console.log({ res });
+            //console.log({ res });
         }
     }
     const handleOTP = (e, focusElem, verifyOTPFunction = null) => {
@@ -125,7 +123,7 @@ export default function Login() {
                 localStorage.setItem("auth-token", res.data.token)
                 navigate("/works", { state: { message: "login successful!" } })
             }
-            console.log({ res });
+            //console.log({ res });
         } else {
             setOtpVerified(false)
         }
@@ -133,6 +131,14 @@ export default function Login() {
 
     }
     const handleLogin = async () => {
+        if(!email){
+            document.getElementById("login_email").classList.add("error_field")
+            return
+        }
+        if(!password){
+            document.getElementById("login_password").classList.add("error_field")
+            return
+        }
         if (email && password) {
             const res = await axios.post("https://instawork-backend.vercel.app/user/login", {
                 data: {
@@ -141,14 +147,16 @@ export default function Login() {
             })
             dispatch(setNotify({ status: res.data.success, message: res.data.message }))
             handleNotify()
-            console.log({ res });
+            //console.log({ res });
             if (res.data.success) {
+                dispatch(setIsLoggedIn(true))
                 navigate("/works", { state: { showSuccess: true } })
                 if (res.data.token) {
                     localStorage.setItem("auth-token", res.data.token)
                 }
             } else {
                 console.warn("login failed!");
+                dispatch(setIsLoggedIn(false))
             }
 
         }
@@ -176,26 +184,21 @@ export default function Login() {
             dispatch(setNotify({ status: res.data.success, message: res.data.message }))
             handleNotify()
             if (res.data.success) {
-                navigate("/works", { state: { showSuccess: true } })
+                dispatch(setIsLoggedIn(true))
+                navigate("/works")
                 if (res.data.token) {
                     localStorage.setItem("auth-token", res.data.token)
                 }
-                setResOTP(res.data.OTP)
-                setShowOTP(false)
             } else {
-                setShowError(true)
-                setTimeout(() => {
-                    setShowError(false)
-                }, 5000)
+                dispatch(setIsLoggedIn(false))
                 console.warn("login failed!");
             }
-            console.log({ res });
         } catch (error) {
             console.warn("login failed!", error.message);
         }
     }
     return (
-        <><Navbar />
+        <>
             <div className="login_holder">
                 <div className="login_container">
                     <div className="login_left">

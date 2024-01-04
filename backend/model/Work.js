@@ -38,6 +38,10 @@ const work = new Schema({
         required : true
     },
     user:{
+        type : Object,
+        required : true
+    },
+    owner:{
         type : String,
         required : true
     },

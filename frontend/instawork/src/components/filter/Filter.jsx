@@ -1,17 +1,19 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import './filter.css'
 import filterIcon from '../../assets/filter-filled-tool-symbol.png'
 import sortIcon from '../../assets/sort.png'
 import { useSelector, useDispatch } from 'react-redux'
 import { fetchFilteredWorks, getAllCityAndWorks } from '../../redux/authSlice'
+import { useLocation } from 'react-router-dom'
 
-export default function () {
+export default function (props) {
+  const location = useLocation()
   const allWorks = useSelector(state => state.user.allWorks)
   const allWorkTypes = useSelector(state => state.user.allWorkTypes)
   const allCities = useSelector(state => state.user.allCities)
   const dispatch = useDispatch()
   const [city, setCity] = useState()
-  const [sortType, setSortType] = useState("asc")
+  const [sortType, setSortType] = useState("desc")
   const [workType, setWorkType] = useState()
   const [salary, setSalary] = useState(500)
   const [salaryRange, setSalaryRange] = useState('0.5k')
@@ -62,22 +64,29 @@ export default function () {
       setShowWorkOptions(false)
     }
   }, false)
+  
   const handleSalaryRange = (e) => {
+    //console.log("handleSalaryRange");
     selectAnySalaryPeriod()
-    let obj = { salary: { $gte: e.target.value.slice(0, 1) * 1000 } }
-    setSalary(e.target.value.slice(0, 1) * 1000)
+    let obj = {}
+    if (e.target.value === '10.5') {
+      setSalary(e.target.value.slice(0, 2) * 1000)
+      obj.salary = { $gte: e.target.value.slice(0, 2) * 1000 } 
+    }else{
+      setSalary(e.target.value.slice(0, 1) * 1000)
+      obj.salary = { $gte: e.target.value.slice(0, 1) * 1000 } 
+    }
     if (workType) {
       obj.type = workType
     }
     if (city) {
       obj.city = city
     }
-    if(salaryPeriod){
-      if(salaryPeriod!=="any"){
-        obj.salaryPeriod = salaryPeriod
-      }
+    if (salaryPeriod !== "any") {
+      obj.salaryPeriod = salaryPeriod
     }
-    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token }))
+   //console.log(obj);
+    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token, pathname: location.pathname }))
     const salaryBG = document.querySelector('.salary_range_bg')
     const salaryRange = document.querySelector('.salary_range')
     if (e.target.value === '0.5') {
@@ -99,6 +108,17 @@ export default function () {
     }
     setSalaryRange(e.target.value.slice(0, 1).concat('k'))
   }
+  const SalaryRange = (fn) => {
+    let timer;
+    return function (e) {
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        fn(e)
+      }, 1000);
+    }
+  }
+  const optSalaryRange = SalaryRange(handleSalaryRange)
+
   const handleWorkType = () => {
     setShowWorkOptions(true)
   }
@@ -118,20 +138,20 @@ export default function () {
     workTypeRef.current.value = item
     setWorkTypeValue(item)
     setWorkType(item)
-    
+
     let obj = { type: item }
     if (city) {
-     obj.city = city
+      obj.city = city
     }
     if (salary) {
-      obj.salary = {$gte : salary}
+      obj.salary = { $gte: salary }
     }
-    if(salaryPeriod){
-      if(salaryPeriod!=="any"){
+    if (salaryPeriod) {
+      if (salaryPeriod !== "any") {
         obj.salaryPeriod = salaryPeriod
       }
     }
-    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token }))
+    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token, pathname: location.pathname }))
   }
   const handleCityOption = (e, item) => {
     selectAnySalaryPeriod()
@@ -139,26 +159,26 @@ export default function () {
     setCityValue(item)
     setCity(item)
 
-    let obj = {city:item}
+    let obj = { city: item }
     if (workType) {
       obj.type = workType
     }
-    if(salary){
-      obj.salary = {$gte : salary}
+    if (salary) {
+      obj.salary = { $gte: salary }
     }
-    if(salaryPeriod){
-      if(salaryPeriod!=="any"){
+    if (salaryPeriod) {
+      if (salaryPeriod !== "any") {
         obj.salaryPeriod = salaryPeriod
       }
     }
-    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token }))
+    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token, pathname: location.pathname }))
   }
   const handleApply = () => {
 
     if (city && workType && salary && salaryPeriod && sortBy && sortType) {
       let obj = { type: workType, city, salary: { $gte: salary }, salaryPeriod }
-      dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token }))
-      console.log({ city, workType, salary, salaryPeriod, sortBy, token });
+      dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token, pathname: location.pathname }))
+      //console.log({ city, workType, salary, salaryPeriod, sortBy, token });
     }
   }
   const handleReset = () => {
@@ -176,7 +196,7 @@ export default function () {
     if (period === "any") {
       delete obj["salaryPeriod"]
     }
-    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token }))
+    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token, pathname: location.pathname }))
   }
   const handleSortType = (e) => {
     let id = e.target.id
@@ -199,16 +219,16 @@ export default function () {
     if (salary) {
       obj.salary = { $gte: salary }
     }
-    if(sortBy==="postedDate"){
-      if(id==="asc"){
-        dispatch(fetchFilteredWorks({ obj, sortBy, sortType: "desc", token }))
+    if (sortBy === "postedDate") {
+      if (id === "asc") {
+        dispatch(fetchFilteredWorks({ obj, sortBy, sortType: "desc", token, pathname: location.pathname }))
       }
-      if(id==="desc"){
-        dispatch(fetchFilteredWorks({ obj, sortBy, sortType: "asc", token }))
+      if (id === "desc") {
+        dispatch(fetchFilteredWorks({ obj, sortBy, sortType: "asc", token, pathname: location.pathname }))
       }
       return
     }
-    dispatch(fetchFilteredWorks({ obj, sortBy, sortType: id, token }))
+    dispatch(fetchFilteredWorks({ obj, sortBy, sortType: id, token, pathname: location.pathname }))
   }
   const selectAnySalaryPeriod = () => {
     document.getElementById("anyRadioInput").setAttribute("checked", "checked")
@@ -216,7 +236,7 @@ export default function () {
   const selectLatestRadio = () => {
     document.getElementById('latestRadioInput').setAttribute("checked", "checked")
   }
-  const handleSortBy = (sortBy) =>{
+  const handleSortBy = (sortBy) => {
     let obj = {}
     setSortBy(sortBy)
     if (city) {
@@ -228,15 +248,20 @@ export default function () {
     if (salary) {
       obj.salary = { $gte: salary }
     }
-    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token }))
+    if (salaryPeriod) {
+      if (salaryPeriod !== "any") {
+        obj.salaryPeriod = salaryPeriod
+      }
+    }
+    dispatch(fetchFilteredWorks({ obj, sortBy, sortType, token, pathname: location.pathname }))
 
   }
-  const handleSalaryPopup = (mode) =>{
-    if(mode==="leave"){
+  const handleSalaryPopup = (mode) => {
+    if (mode === "leave") {
       document.getElementById("salary_range_bg").classList.add("display_none")
       document.getElementById("salary_range").classList.add("display_none")
     }
-    if(mode==="enter"){
+    if (mode === "enter") {
       document.getElementById("salary_range_bg").classList.remove("display_none")
       document.getElementById("salary_range").classList.remove("display_none")
     }
@@ -297,7 +322,7 @@ export default function () {
             <span className='salary_range_bg display_none' id='salary_range_bg'></span>
             <br />
             <div className="range">
-              <span>0.5k</span><input type="range" defaultValue="0.5" step='1' min='0.5' max='10.5' onMouseLeave={()=>handleSalaryPopup("leave")} onMouseEnter={()=>handleSalaryPopup("enter")} onChange={e => handleSalaryRange(e)} /> <span>10k</span>
+              <span>0.5k</span><input type="range" defaultValue="0.5" step='1' min='0.5' max='10.5' onMouseLeave={() => handleSalaryPopup("leave")} onMouseEnter={() => handleSalaryPopup("enter")} onChange={(e)=>optSalaryRange(e)} /> <span>10k</span>
             </div>
           </div>
           <div className="salary_period_container">

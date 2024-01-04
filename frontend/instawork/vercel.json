@@ -1,0 +1,28 @@
+{
+    "routes": [
+        {
+            "src": "/",
+            "dest": "/"
+        },
+        {
+            "src": "/works",
+            "dest": "/works"
+        },
+        {
+            "src": "/login",
+            "dest": "/login"
+        },
+        {
+            "src": "/signup",
+            "dest": "/signup"
+        },
+        {
+            "src": "/post",
+            "dest": "/post"
+        },
+        {
+            "src": "/**",
+            "dest": "/notfound"
+        }
+    ]
+}

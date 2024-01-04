@@ -7,6 +7,9 @@
 .status{
     margin-top: 0;
 }
+.job_holder{
+    min-width: 600px;
+}
 .jobs_btn_wrapper{
     font-weight: 500;
     position: relative;
@@ -58,5 +61,20 @@
     }
     100%{
         left: 90px;
+    }
+}
+@media screen and (max-width:700px) {
+    .job_holder{
+        min-width: 500px;
+    }
+}
+@media screen and (max-width:600px) {
+    .job_holder{
+        min-width: 400px;
+    }
+}
+@media screen and (max-width:450px) {
+    .job_holder{
+        min-width: 350px;
     }
 }

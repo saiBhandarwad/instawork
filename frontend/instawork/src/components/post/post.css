@@ -5,7 +5,34 @@
     display: grid;
     place-items: center;
 }
+.updateBoxContainer{
+    min-height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.441);
+    position: fixed;
+    top: 40px;
+    left: 0;
+    display: grid;
+    place-items: center;
+    animation: easy .5s ease-in-out;
+}
+.closeBtn{
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 25px;
+    cursor: pointer;
+}
+@keyframes easy {
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
 .post-form{
+    position: relative;
     min-height: 560px;
     width: 700px;
     background: rgb(255, 255, 255);

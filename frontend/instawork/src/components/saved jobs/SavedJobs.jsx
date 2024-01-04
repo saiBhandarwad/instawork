@@ -13,21 +13,20 @@ export default function SavedJobs() {
         setShowFilter(!showFilter)
     }
     useEffect(() => {
-        console.log({ myJobs, savedJobs });
+        //console.log({ myJobs, savedJobs });
     }, [])
-    const handleMyJobs = (e) =>{
+    const handleMyJobs = (e) => {
         document.getElementById("bg_btn").classList.add("left")
         document.getElementById("bg_btn").classList.remove("right")
         setShowMyJobs(true)
     }
-    const handleMySavedJobs = (e) =>{
+    const handleMySavedJobs = (e) => {
         document.getElementById("bg_btn").classList.add("right")
         document.getElementById("bg_btn").classList.remove("left")
         setShowMyJobs(false)
     }
     return (
         <>
-            <Navbar />
             <div className="main_heading_container">
                 <div className="main_heading">Ab Paise Ki Tension Ko Karo Bye Bye!
                     <br />
@@ -53,10 +52,11 @@ export default function SavedJobs() {
             {showMyJobs && <div className='status'>{myJobs?.length} {myJobs?.length <= 1 ? " job" : "Jobs"} you have posted..</div>}
             {!showMyJobs && <div className='status'>{savedJobs?.length} {savedJobs?.length <= 1 ? "job" : "Jobs"} you have saved..</div>}
             <div className="app_container">
-                <Filter />
+                {showMyJobs && <Filter/>}
+                {!showMyJobs && <Filter/>}
                 <div className="job_holder">
-                    {showMyJobs && <Job jobArray={myJobs} />}
-                    {!showMyJobs && <Job jobArray={savedJobs} />}
+                    {showMyJobs && <Job jobArray={myJobs} action="delete"/>}
+                    {!showMyJobs && <Job jobArray={savedJobs} action="remove"/>}
                 </div>
             </div>
         </>

@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <>
-      <Navbar/>
+      
       <div className="home_main_container">
         <div className='img_container'>{/* for image */}</div>
 

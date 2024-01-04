@@ -39,10 +39,10 @@ export default function Signup() {
             localStorage.setItem("auth-token",response.data.token)
             navigate("/works")
         }
-        console.log({ response });
+        //console.log({ response });
     }
     const handleSignup = () => {
-        console.log({firstName,lastName, emailVerified, password,confirmPassword,mobileNumberVerified});
+        //console.log({firstName,lastName, emailVerified, password,confirmPassword,mobileNumberVerified});
         if(firstName.length>=3 && lastName.length>=3 && emailVerified===true && password===confirmPassword){
             createUser()
         }
@@ -173,7 +173,7 @@ export default function Signup() {
             elem.classList.remove("error_field")
         }
         if(isEmailValid===false || emailVerified===true){
-            console.log({emailVerified,isEmailValid});
+            //console.log({emailVerified,isEmailValid});
             return;
         }
         setShowEmailOTP(true)
@@ -208,7 +208,7 @@ export default function Signup() {
                 setMobileOTPSent(false)
                 setIsMobileValid(false)
             }       
-            console.log({res});
+            //console.log({res});
         }
     }
     const handleMobileOTP = (e, focusElem, verifyOTPFunction = null) =>{
@@ -242,7 +242,7 @@ export default function Signup() {
         
     }
     return (
-        <><Navbar/>
+        <>
             <div className="signup_holder">
                 <div className="signup_container">
 

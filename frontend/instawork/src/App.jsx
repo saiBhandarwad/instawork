@@ -33,7 +33,6 @@ export default function App() {
       dispatch(getSavedJobs(token))
       dispatch(getMyJobs(token))
     }
-    console.log({ isMyTokenExpired });
     if (isMyTokenExpired) {
       localStorage.removeItem("auth-token")
       dispatch(setNotify({ status: true, message: "token is expired" }))
@@ -64,7 +63,7 @@ export default function App() {
         navigate("/login")
       }
     }).catch((error) => {
-      console.log({ error })
+      //console.log({ error })
     })
   }
 
@@ -74,7 +73,6 @@ export default function App() {
   return (
     <>
 
-      <Navbar />
       <div className="main_heading_container">
         <div className="main_heading">Ab Paise Ki Tension Ko Karo Bye Bye!
           <br />

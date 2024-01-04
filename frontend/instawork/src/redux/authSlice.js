@@ -1,15 +1,15 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
-import {decodeToken} from 'react-jwt'
+import { decodeToken } from 'react-jwt'
 const initialState = {
-    allWorks:[],
-    savedJobs:[],
-    myJobs:[],
-    allCities:[],
-    allWorkTypes:[],
-    user:null,
-    loading:true,
-    isUserLoggedIn: '',
+    allWorks: [],
+    savedJobs: [],
+    myJobs: [],
+    allCities: [],
+    allWorkTypes: [],
+    user: null,
+    loading: true,
+    isLoggedIn: false,
     showNotify: false,
     notify: {
         status: false,
@@ -29,10 +29,13 @@ export const getSavedJobs = createAsyncThunk(
     'user/getSavedJobs',
     async (token) => {
         const { email } = decodeToken(token)
-        const response = await axios.post("https://instawork-backend.vercel.app/work/getSavedJobs", {
-            data : { email },
+        const response = await axios.post("http://localhost:8080/work/getSavedJobs", {
+            data: { email },
             headers: { token }
         });
+        response.data.savedJobs.forEach(elem => {
+            elem.status = "saved"
+        })
         return response.data
     }
 )
@@ -40,11 +43,27 @@ export const getMyJobs = createAsyncThunk(
     'user/getMyJobs',
     async (token) => {
         const { email } = decodeToken(token)
-        const response = await axios.post("https://instawork-backend.vercel.app/work/getMyJobs", {
-            data : { email },
+        const resMyJobs = await axios.post("http://localhost:8080/work/getMyJobs", {
+            data: { email },
             headers: { token }
         });
-        return response.data
+        const resSavedWorks = await axios.post("http://localhost:8080/work/getSavedJobs", {
+            data: { email },
+            headers: { token }
+        });
+        let myJobs = resMyJobs.data.myJobs
+       //console.log({myJobs});
+        let savedWorks = resSavedWorks.data.savedJobs
+        const allWorks = myJobs.map(work => {
+            savedWorks.map((savedWork) => {
+                if (work._id === savedWork.id) {
+                    work.status = "saved"
+                }
+            })
+            return work
+        })
+        const payload = { success: resMyJobs.data.success, allWorks }
+        return payload
     }
 )
 export const fetchAllWorks = createAsyncThunk(
@@ -54,34 +73,33 @@ export const fetchAllWorks = createAsyncThunk(
         const resWorks = await axios.post("https://instawork-backend.vercel.app/work/works", {
             headers: { token }
         });
-        const resSavedWorks = await axios.post("https://instawork-backend.vercel.app/work/getSavedJobs", {
-            data : { email },
+        const resSavedWorks = await axios.post("http://localhost:8080/work/getSavedJobs", {
+            data: { email },
             headers: { token }
         });
-        
+
         let works = resWorks.data.works
-        console.log({works});
         let savedWorks = resSavedWorks.data.savedJobs
-        const allWorks = works.map(work=>{
-            savedWorks.map((savedWork)=>{
-                if(work._id===savedWork.id){
-                    work.status="saved"
+        const allWorks = works.map(work => {
+            savedWorks.map((savedWork) => {
+                if (work._id === savedWork.id) {
+                    work.status = "saved"
                 }
             })
             return work
         })
-        console.log({allWorks});
-        const payload = {success : resWorks.data.success, allWorks}
+        const payload = { success: resWorks.data.success, allWorks }
         return payload
     }
 )
 export const fetchFilteredWorks = createAsyncThunk(
     'user/fetchFilteredWorks',
-    async ({obj,sortBy,sortType,token}) => {
+    async ({ obj, sortBy, sortType, token, pathname }) => {
+        const { email } = decodeToken(token)
         const response = await axios.post("https://instawork-backend.vercel.app/work/getWorksByFilter", {
-            data: { filterOBJECT: obj, sortBy, type: sortType },
+            data: { filterOBJECT: obj, sortBy, type: sortType, pathname, email },
             headers: { token }
-          })
+        })
         return response.data
     }
 )
@@ -92,7 +110,6 @@ export const fetchUserAsync = createAsyncThunk(
             data: { token }
         });
         // The value we return becomes the `fulfilled` action payload
-
         return response.data;
     }
 
@@ -103,7 +120,7 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         setIsLoggedIn: (state, action) => {
-            state.isUserLoggedIn = action.payload;
+            state.isLoggedIn = action.payload;
         },
         setShowNotify: (state, action) => {
             state.showNotify = action.payload
@@ -115,13 +132,14 @@ export const authSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchUserAsync.fulfilled, (state, action) => {
-                state.isUserLoggedIn = action.payload.success;
-                state.user = action.payload.user
+                if(action.payload.success){
+                    state.user = action.payload.user
+                }    
             })
             .addCase(fetchAllWorks.fulfilled, (state, action) => {
-                if(action.payload.success){
+                if (action.payload.success) {
                     state.allWorks = action.payload.allWorks;
-                }else{
+                } else {
                     state.allWorks = [];
                 }
                 state.loading = false
@@ -130,23 +148,21 @@ export const authSlice = createSlice({
                 state.loading = true
             })
             .addCase(getAllCityAndWorks.fulfilled, (state, action) => {
-                if(action.payload.success){
+                if (action.payload.success) {
                     state.allWorkTypes = action.payload.workTypeArray;
                     state.allCities = action.payload.cityArray;
                     state.loading = false
-                }else{
-                    state.allWorks = [];
                 }
             })
             .addCase(getAllCityAndWorks.pending, (state) => {
                 state.loading = true
             })
             .addCase(getSavedJobs.fulfilled, (state, action) => {
-                if(action.payload.success){
+                if (action.payload.success) {
                     state.savedJobs = action.payload.savedJobs;
-                    console.log({savedJobs : action.payload.savedJobs});
+                    //console.log({savedJobs : action.payload.savedJobs});
                     state.loading = false
-                }else{
+                } else {
                     state.savedJobs = [];
                 }
             })
@@ -154,12 +170,9 @@ export const authSlice = createSlice({
                 state.loading = true
             })
             .addCase(getMyJobs.fulfilled, (state, action) => {
-                if(action.payload.success){
-                    state.myJobs = action.payload.myJobs;
-                    console.log({myJobs : action.payload.myJobs});
+                if (action.payload.success) {
+                    state.myJobs = action.payload.allWorks;
                     state.loading = false
-                }else{
-                    state.savedJobs = [];
                 }
             })
             .addCase(getMyJobs.pending, (state) => {
@@ -167,19 +180,20 @@ export const authSlice = createSlice({
             })
             .addCase(fetchFilteredWorks.fulfilled, (state, action) => {
                 state.loading = false
-                if(action.payload.success){
+                if (action.payload.success) {
+                   //console.log(action.payload);
                     state.allWorks = action.payload.works;
-                }else{
-                    state.allWorks = [{
-                        type:"null",
-                        city:"null",
-                        duration:"null",
-                        startDate:"null",
-                        endDate:"null",
-                        salaryPeriod:"null",
-                        salary:"null",
-                        user:"null"
-                    }];
+                    if (action.payload.myJobs) {
+                        state.myJobs = action.payload.myJobs
+                    }
+                    if (action.payload.savedJobs) {
+                        state.savedJobs = action.payload.savedJobs.map(elem => {
+                            elem.status = "saved"
+                            return elem
+                        })
+                    }
+
+
                 }
             })
             .addCase(fetchFilteredWorks.pending, (state) => {

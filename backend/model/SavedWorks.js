@@ -38,10 +38,10 @@ const savedJobs = new Schema({
         required : true
     },
     user:{
-        type : String,
+        type : Object,
         required : true
     },
-    email:{
+    saver:{
         type : String,
         required : true
     },
