@@ -65,13 +65,17 @@ export default function Post({ work, setShowUpdateBox }) {
     function reducer(state, action) {
         switch (action.type) {
             case "workType": {
-                return { ...state, workType: action.payload }
+                let workType = action.payload.charAt(0).toUpperCase() + action.payload.slice(1)
+                console.log(workType);
+                return { ...state, workType: workType }
             }
             case "salary": {
                 return { ...state, salary: action.payload }
             }
             case "city": {
-                return { ...state, city: action.payload }
+                let city = action.payload.charAt(0).toUpperCase() + action.payload.slice(1)
+                console.log(city);
+                return { ...state, city: city }
             }
             case "duration": {
                 return { ...state, duration: action.payload }

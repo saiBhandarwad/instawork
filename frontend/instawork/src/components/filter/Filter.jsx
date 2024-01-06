@@ -126,12 +126,16 @@ export default function (props) {
     setShowLocationOptions(true)
   }
   const workTypeOnChangeFunction = (e) => {
-    setWorkTypeValue(e.target.value)
-    setWorkType(e.target.value)
+    let value = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)
+    console.log(value);
+    setWorkTypeValue(value)
+    setWorkType(value)
   }
   const locationOnChangeFunction = (e) => {
-    setCityValue(e.target.value)
-    setCity(e.target.value)
+    let value = e.target.value.charAt(0).toUpperCase() + e.target.value.slice(1)
+    console.log(value);
+    setCityValue(value)
+    setCity(value)
   }
   const handleWorkOption = (e, item) => {
     selectAnySalaryPeriod()

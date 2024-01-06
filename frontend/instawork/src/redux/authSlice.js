@@ -149,8 +149,8 @@ export const authSlice = createSlice({
             })
             .addCase(getAllCityAndWorks.fulfilled, (state, action) => {
                 if (action.payload.success) {
-                    state.allWorkTypes = action.payload.workTypeArray;
-                    state.allCities = action.payload.cityArray;
+                    state.allWorkTypes = action.payload.workTypeArray.map(elem=>elem.charAt(0).toUpperCase() + elem.slice(1));
+                    state.allCities = action.payload.cityArray.map(elem=>elem.charAt(0).toUpperCase() + elem.slice(1));
                     state.loading = false
                 }
             })
