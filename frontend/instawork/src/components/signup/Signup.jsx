@@ -37,7 +37,7 @@ export default function Signup() {
     const dispatch = useDispatch()
 
     const createUser = async () => {
-        const response = await axios.post("http://localhost:8080/user/signup", {
+        const response = await axios.post("https://instawork-backend.vercel.app/user/signup", {
             data: {
                 firstName, lastName, email, phone, password
             }
