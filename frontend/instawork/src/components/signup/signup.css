@@ -127,14 +127,14 @@
     border: 1px solid #3c3c3c;
 }
 
-#mobile_number{
-    width: 180px !important;
-    padding-left: 40px !important;
+.signup_holder #mobile_number{
+    width: 100%;
+    padding-left: 40px;
     border: none !important;
     border-bottom: 2px solid !important;
     border-bottom: 2px solid black;
-    outline: none !important;
-    font-size: 16px !important;
+    outline: none;
+    font-size: 16px;
 }
 #phoneIcon{
     height: 22px;

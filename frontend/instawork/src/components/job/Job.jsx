@@ -11,22 +11,38 @@ import { fetchAllWorks, getMyJobs, getSavedJobs } from '../../redux/authSlice'
 import axios from 'axios'
 import { decodeToken } from 'react-jwt'
 import Post from '../post/Post'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 export default function Job({ jobArray, action }) {
     const { pathname } = useLocation()
-    const [showMore, setShowMore] = useState()
     const loading = useSelector(state => state.user.loading)
     const [showUpdateBox, setShowUpdateBox] = useState()
     const [workToUpdate, setWorkToUpdate] = useState()
     const dispatch = useDispatch()
-    const token = localStorage.getItem("auth-token")
-    const { email } = decodeToken(token)
-    let user = []
+    const navigate = useNavigate()
+    let token = localStorage.getItem("auth-token")
+    let email = ""
+    // let user = []
 
     useEffect(() => {
-        dispatch(fetchAllWorks(token))
-        dispatch(getSavedJobs(token))
-        dispatch(getMyJobs(token))
+        console.log({ token });
+        if (!token) {
+            navigate("/login")
+        } else {
+            axios.post("https://instawork-backend.vercel.app/user/validateUser", {
+                data: { token }
+            }).then((res) => {
+                console.log({ res });
+                if (res.data.success) {
+                    let obj = decodeToken(token)
+                    email = obj?.email
+                    dispatch(fetchAllWorks(token))
+                    dispatch(getSavedJobs(token))
+                    dispatch(getMyJobs(token))
+                } else {
+                    navigate("/login")
+                }
+            })
+        }
     }, [])
     const handleSaveJob = async (e, work) => {
         if (e.target.innerHTML === "saved✅") return
@@ -94,7 +110,7 @@ export default function Job({ jobArray, action }) {
 
                 return (
                     <div className="job_container" key={work._id}>
-                        {(work.owner === email || action==="remove")&& <>
+                        {(work.owner === email || action === "remove") && <>
                             <i className="fa-solid fa-ellipsis-vertical moreBtn" onClick={() => handleMore(true, i)}></i>
                             <div className="more-container" id={"moreContainer" + i}>
                                 <i className='fa-solid fa-xmark' onClick={() => handleMore(false, i)}></i>

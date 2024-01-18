@@ -41,7 +41,8 @@ export default function Login() {
         }
         loginUser()
     }, [])
-    const handleNotify = () => {
+    
+    const handleNotify = ()=>{
         dispatch(setShowNotify(true))
         setTimeout(() => {
             dispatch(setShowNotify(false))
@@ -75,7 +76,9 @@ export default function Login() {
             if (res.data.success) {
                 setOTPSent(true)
                 setResOTP(res.data.OTP)
-            } else if (res.data.success === false) {
+            }else {
+                dispatch(setNotify({ status: false, message: res.data.message }))
+                handleNotify()
                 setOTPSent('')
             }
             //console.log({ res });

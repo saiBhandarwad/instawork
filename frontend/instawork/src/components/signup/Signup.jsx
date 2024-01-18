@@ -37,20 +37,22 @@ export default function Signup() {
     const dispatch = useDispatch()
 
     const createUser = async () => {
-        const response = await axios.post("https://instawork-backend.vercel.app/user/signup", {
+        const response = await axios.post("http://localhost:8080/user/signup", {
             data: {
                 firstName, lastName, email, phone, password
             }
         })
-        if(response.data.success){}
-        if (response.data.token) {
-            localStorage.setItem("auth-token", response.data.token)
-            navigate("/works")
-        }else{
+        if (response.data.success) {
+            if (response.data.token) {
+                localStorage.setItem("auth-token", response.data.token)
+                dispatch(setIsLoggedIn(true))
+                navigate("/works")
+            }
+        } else {
             dispatch(setNotify({ status: true, message: response.data.message }))
             handleNotify()
         }
-        
+
     }
     const handleNotify = () => {
         dispatch(setShowNotify(true))
@@ -74,24 +76,24 @@ export default function Signup() {
             handleNotify()
             return
         }
-        else if(password.length<6 || !password){
+        else if (password.length < 6 || !password) {
             const elem = document.getElementById("password")
             elem.classList.add("error-field")
             return
         }
-        else if(confirmPassword.length<6 || !confirmPassword){
+        else if (confirmPassword.length < 6 || !confirmPassword) {
             const elem = document.getElementById("confirmPassword")
             elem.classList.add("error-field")
             return
         }
-        else if(password !== confirmPassword){
+        else if (password !== confirmPassword) {
             dispatch(setNotify({ status: true, message: "password and confirm password did not match" }))
             handleNotify()
             const elem = document.getElementById("confirmPassword")
             elem.classList.add("error-field")
             return
         }
-        else if(!phone || phone.length < 10){
+        else if (!phone || phone.length < 10) {
             const elem = document.getElementById("mobile_number")
             elem.classList.add("error-field")
             return
@@ -99,16 +101,20 @@ export default function Signup() {
         createUser()
     }
     const handleMobileNum = (e) => {
+        
+        setPhone(e.target.value)
         if (mobileNumberVerified === true) {
             setMobileNumberVerified('')
         }
         const elem = document.getElementById("mobile_number")
-        if (e.target.value.length >= '10') {
-            document.getElementById("mobile_number").value = e.target.value.slice(0, 10)
+        if (e.target.value.length >= 10) {
+            elem.value = e.target.value.slice(0, 10)
             setPhone(e.target.value.slice(0, 10))
             elem.classList.remove("error_field")
         } else {
-            elem.classList.add("error_field")
+            if(!elem.classList.contains("error_field")){
+                elem.classList.add("error_field")
+            }
         }
     }
     const handleOTP = (e, focusElem, verifyOTPFunction = null) => {
@@ -181,9 +187,9 @@ export default function Signup() {
                 elem.classList.remove("error_field")
             }
         }
-        if(e.target.value === confirmPassword){
+        if (e.target.value === confirmPassword) {
             document.getElementById("confirmPassword").classList.remove("error_field")
-        }else{
+        } else {
             document.getElementById("confirmPassword").classList.add("error_field")
         }
     }
@@ -238,7 +244,7 @@ export default function Signup() {
         if (res.data.success) {
             setOTPSent(true)
             setOtpVerified('')
-        } else{
+        } else {
             dispatch(setNotify({ status: false, message: res.data.message }))
             handleNotify()
         }
@@ -258,15 +264,24 @@ export default function Signup() {
                 setMobileOTPSent(true)
                 setMobileResOTP(res.data.OTP)
                 setIsMobileValid(true)
-            } else{
+            } else {
                 dispatch(setNotify({ status: false, message: res.data.message }))
                 handleNotify()
                 setMobileOTPSent(false)
                 setIsMobileValid(false)
             }
-            //console.log({res});
         }
     }
+    const debouncedSendOTP = () => {
+        let timer;
+        return () => {
+            if (timer) clearTimeout(timer)
+            timer = setTimeout(() => {
+                sendMobileOTP()
+            }, 500);
+        }
+    }
+    const optSendOTP = debouncedSendOTP()
     const handleMobileOTP = (e, focusElem, verifyOTPFunction = null) => {
         if (e.target.value.length > 0) {
             document.getElementById(e.target.id).value = e.target.value.slice(e.target.value.length - 1)
@@ -352,7 +367,7 @@ export default function Signup() {
 
                             <div className="signup_with_mobile">
                                 <input className='' type="number" placeholder='Enter Mobile No' id='mobile_number' onChange={(e) => handleMobileNum(e)} />
-                                <button className='send_otp_btn' onClick={sendMobileOTP}>SEND OTP</button>
+                                {/* { <button className='send_otp_btn' onClick={optSendOTP}>SEND OTP</button>} */}
                                 <img src={phoneIcon} alt="" id='phoneIcon' />
 
                             </div>

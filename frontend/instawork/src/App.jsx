@@ -22,28 +22,35 @@ export default function App() {
 
 
   useEffect(() => {
-    let isMyTokenExpired;
     if (token) {
-      isMyTokenExpired = isExpired(token)
-      if(isMyTokenExpired){
+      let isMyTokenExpired = isExpired(token)
+      if (isMyTokenExpired) {
         localStorage.removeItem("auth-token")
         navigate("/login")
-        return
-      }      
-      dispatch(getSavedJobs(token))
-      dispatch(getMyJobs(token))
-    }
-    if (isMyTokenExpired) {
-      localStorage.removeItem("auth-token")
-      dispatch(setNotify({ status: true, message: "token is expired" }))
-      handleNotify()
+      } else {
+        axios.post("https://instawork-backend.vercel.app/user/validateUser", {
+          data: { token }
+        }).then((res) => {
+          if (res.data.success) {
+            dispatch(fetchAllWorks(token))
+            dispatch(getSavedJobs(token))
+            dispatch(getMyJobs(token))
+            dispatch(setNotify({ status: true, message: "token is expired" }))
+            handleNotify()
+          } else {
+            localStorage.removeItem("auth-token")
+            navigate("/login")
+          }
+        })
+
+      }
+    }else{
+      navigate("/login")
     }
     if (location?.state?.message) {
       dispatch(setNotify({ status: true, message: location?.state?.message }))
       handleNotify()
     }
-    validateUser()
-    dispatch(fetchAllWorks(token))
 
   }, [])
 
@@ -53,20 +60,6 @@ export default function App() {
       dispatch(setShowNotify(false))
     }, 5000);
   }
-  const validateUser = () => {
-    axios.post("https://instawork-backend.vercel.app/user/validateUser", {
-      data: { token }
-    }).then((res) => {
-      if (res.data.success) {
-        // nothing to do
-      } else {
-        navigate("/login")
-      }
-    }).catch((error) => {
-      //console.log({ error })
-    })
-  }
-
   const toggleFilter = () => {
     setShowFilter(!showFilter)
   }
@@ -92,7 +85,7 @@ export default function App() {
       <div className="app_container">
         <Filter />
         <div className="job_holder">
-          <Job jobArray={allWorks}/>
+          <Job jobArray={allWorks} />
         </div>
       </div>
       {showNotify && <Notifty msg={notify?.message} status={notify?.status} />}

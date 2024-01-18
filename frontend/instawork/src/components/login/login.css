@@ -87,12 +87,13 @@
     color: #c05e5e;
 }
 #mobile_number{
-    width: 150px;
+    width: 180px;
     padding-left: 40px;
-    border: none;
+    border: none !important;
+    border-bottom: 2px solid !important;
     border-bottom: 2px solid black;
     outline: none;
-    font-size: 18px;
+    font-size: 16px;
 }
 #phoneIcon{
     height: 22px;
