@@ -12,6 +12,19 @@ export default function Navbar() {
   const token = localStorage.getItem("auth-token")
   const dispatch = useDispatch()
 
+  useEffect(()=>{
+    console.log({pathname});
+    if(pathname === "/login"){
+      handleLink(handleLogin,"login")
+    }
+    else if(pathname === "/signup"){
+      handleLink(handleSignup,"signup")
+    }
+    else if(pathname === "/"){
+      handleLink(handleHome,"home")
+    }
+    
+  },[])
   useEffect(() => {
     dispatch(fetchUserAsync(token))
   }, [isLoggedIn])

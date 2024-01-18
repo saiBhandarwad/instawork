@@ -61,10 +61,10 @@ workRouter
             const user = await User.findOne({email}).select("-password")
 
             const response = await Work.create({
-                type: workType,
+                type: workType.charAt(0).toUpperCase() + workType.slice(1),
                 detail,
                 address,
-                city: city,
+                city: city.charAt(0).toUpperCase() + city.slice(1),
                 duration,
                 startDate,
                 endDate,
@@ -81,6 +81,7 @@ workRouter
     })
     .post('/works', async (req, res) => {
         try {
+            console.log("works");
             const works = await Work.find().sort([["postedDate", "desc"]])
             res.json({ success: true, works })
         } catch (error) {
@@ -153,7 +154,7 @@ workRouter
             const { workType, salary, city, duration, startDate, endDate, detail, address, period, salaryPeriod, _id } = req.body.data
             //console.log({workType, salary, city, duration, startDate, endDate, detail, address, period, _id});
             const response = await Work.findByIdAndUpdate(_id,{ 
-                type: workType, salary, city, duration, startDate, endDate, detail, address, period, salaryPeriod, _id
+                type: workType.charAt(0).toUpperCase() + workType.slice(1), salary, city: city.charAt(0).toUpperCase()+ city.slice(1), duration, startDate, endDate, detail, address, period, salaryPeriod, _id
             })
             
             res.json({ success: true, message: "work updated successfully!", response })
